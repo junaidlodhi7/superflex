@@ -1,0 +1,54 @@
+<div class="card">
+  <div class="card-header">
+    <h4>New Functional Movement</h4>
+  </div>
+  <div class="card-block">
+    <ngb-alert [type]="alert.type" [dismissible]="false" *ngIf="!alert['closed']" (close)="alert['closed']">{{ alert['message'] }}</ngb-alert>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="row">
+        <div class="col-12">
+          <div class="row">
+            <label class="col-2 wordWrap">Name</label>
+            <fieldset class="col-10 form-group" [ngClass]="{'has-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}">
+              <input type="text" class="form-control" placeholder="Name" [formControl]="form.controls['name']" [ngClass]="{'form-control-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">Name is required.</div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <label class="col-2 wordWrap">Description</label>
+            <fieldset class="col-10 form-group">
+              <textarea type="text" class="form-control" placeholder="Description" [formControl]="form.controls['description']"></textarea>
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="row">
+            <label class="col-2">Suit</label>
+            <fieldset class="col-10 form-group">
+              <select class="form-control" id="suitTypeSelect">
+                <option *ngFor="let st of suitTypes" value={{st.id}} [formControl]="form.controls['suit_id']">{{st.label}}</option>
+              </select>
+            </fieldset>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <label class="col-2 wordWrap">Functional movement (Yaml)</label>
+            <fieldset class="col-10 form-group">
+              <textarea id="code-editor" class="border" ></textarea>
+            </fieldset>
+          </div>
+        </div>
+        <div class="col-12 mb-4 border-top"></div>
+        <div class="col-12">
+          <button title="Create" class="btn btn-primary pull-right" style="float: right !important;" type="submit" [disabled]="!form.valid">Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>

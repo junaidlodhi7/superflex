@@ -1,0 +1,271 @@
+
+<ng-sidebar-container class="app" [ngClass]="{'mode-boxed': isBoxed, 'sidebar-opened': isOpened, 'theme-light': theme == 'light', 'theme-dark': theme == 'dark', 'mode-push': _mode == 'push', 'mode-dock': _mode == 'dock', 'mode-over': _mode == 'over', 'mode-slide': _mode == 'slide', 'no-footer': options?.removeFooter, 'map-header': options?.mapHeader}">
+  <ng-sidebar
+    [(opened)]="isOpened"
+    [(mode)]="_mode"
+    [position]="'left'"
+    [dockedSize]="'80px'"
+    [autoCollapseWidth]="'991'"
+    [closeOnClickOutside]="isOver()"
+    [showBackdrop]="isOver()"
+    [sidebarClass]="'sidebar-panel'" #sidebar>
+    <nav class="navbar custom-navbar main-brand">
+      <a class="navbar-brand m-auto" [routerLink]="['/dashboard']">
+        <img src="../../../assets/images/logo.png" class="navbar-brand-logo m-auto" alt="SEISMIC">
+      </a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="javascript:;" class="nav-link" (click)="toogleSidebar()">
+            <i class="hamburger-icon v2" *ngIf="_mode === 'over' && !isOver()">
+              <span></span>
+            </i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- main navigation -->
+    <nav class="menu">
+      <ul class="navigation" appAccordion>
+        <li class="navigation-item" appAccordionLink *ngFor="let menuitem of menuItems.getAll()" group="{{menuitem.state}}">
+          <a class="navigation-link" appAccordionToggle [routerLink]="['/', menuitem.state]" *ngIf="menuitem.type === 'link'">
+            <i class="icon icon-{{ menuitem.icon }}"></i>
+            <span>{{ menuitem.name | translate }}</span>
+            <span class="mr-auto"></span>
+            <span class="badge badge-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+          </a>
+          <a class="navigation-link" appAccordionToggle href="{{menuitem.state}}" *ngIf="menuitem.type === 'extLink'">
+            <i class="icon icon-{{ menuitem.icon }}"></i>
+            <span>{{ menuitem.name | translate }}</span>
+            <span class="mr-auto"></span>
+            <span class="badge badge-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+          </a>
+          <a class="navigation-link" appAccordionToggle href="{{menuitem.state}}" target="_blank" *ngIf="menuitem.type === 'extTabLink'">
+            <i class="icon icon-{{ menuitem.icon }}"></i>
+            <span>{{ menuitem.name | translate }}</span>
+            <span class="mr-auto"></span>
+            <span class="badge badge-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+          </a>
+          <a class="navigation-link" appAccordionToggle href="javascript:;" *ngIf="menuitem.type === 'sub'">
+            <i class="icon icon-{{ menuitem.icon }}"></i>
+            <span>{{ menuitem.name | translate }}</span>
+            <span class="mr-auto"></span>
+            <span class="badge badge-{{ badge.type }}" *ngFor="let badge of menuitem.badge">{{ badge.value }}</span>
+            <i class="menu-caret icon icon-arrows-right"></i>
+          </a>
+          <ul class="navigation-submenu" *ngIf="menuitem.type === 'sub'">
+            <li class="navigation-item" *ngFor="let childitem of menuitem.children" routerLinkActive="open">
+              <a [routerLink]="['/', menuitem.state, childitem.state ]" class="navigation-link relative">{{ childitem.name | translate }}</a>
+            </li>
+          </ul>
+        </li>
+        <!--<li class="navigation-item"><hr class="mt-0 mb-0" /></li>
+        <li class="navigation-item">
+          <a class="navigation-link" (click)="addMenuItem()">
+            <i class="icon icon-basic-add"></i>
+            <span>Add</span>
+          </a>
+        </li>-->
+      </ul>
+    </nav>
+    <!-- /main navigation -->
+  </ng-sidebar>
+
+  <div class="app-inner">
+    <nav class="navbar custom-navbar bg-faded main-header">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="javascript:;" class="nav-link" (click)="toogleSidebar()">
+            <i class="hamburger-icon v2" *ngIf="_mode !== 'dock'">
+              <span></span>
+            </i>
+          </a>
+        </li>
+      </ul>
+      <span class="navbar-heading hidden-xs-down">{{options?.heading}}</span>
+      <span class="mr-auto"></span>
+      <ul class="navbar-nav">
+        <li class="nav-item" ngbDropdown>
+          <a href="javascript:;" class="nav-link" ngbDropdownToggle>
+            <img *ngIf="currentUser.profile_pic_url==null" src="assets/images/face1.jpg" class="navbar-avatar rounded-circle" alt="user" title="user">
+            <img *ngIf="currentUser.profile_pic_url!=null" [src]=currentUser.profile_pic_url class="navbar-avatar rounded-circle" alt="user" title="user">
+          </a>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a class="dropdown-item" (click)="openProfileModal(profileModal)">
+              <i class="icon icon-basic-settings mr-3"></i>
+              <span>Profile</span>
+            </a>
+            <a class="dropdown-item" href="javascript:;" (click)="openChangePasswordModal(changePasswordContent)">
+              <i class="icon icon-basic-lock mr-3"></i>
+              <span>Change Password</span>
+            </a>
+            <!--<a class="dropdown-item" href="javascript:;">-->
+              <!--<i class="icon icon-basic-message-multiple mr-3"></i>-->
+              <!--<span>Notifications</span>-->
+            <!--</a>-->
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="javascript:;" (click)="logout()">
+                <i class="icon icon-arrows-switch-vertical mr-3"></i>
+                <span>Signout</span>
+              </a>
+          </div>
+        </li>
+        <li class="nav-item" ngbDropdown>
+          <a (click)="getReceivedNotifications()" class="nav-link" ngbDropdownToggle>
+            <i class="fi flaticon-notification"></i>
+            <span class="badge badge-danger" *ngIf="notificationCount > 0">{{notificationCount}}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-right notifications">
+            <div class="notifications-wrapper" *ngFor="let notification of notifications">
+              <a href="javascript:;" class="dropdown-item">
+                <span class="badge badge-warning" *ngIf="notification.status==='unread'">NEW</span>
+                {{notification.message}}
+                <span class="time">At {{notification.created_timestamp | date:'medium'}} by {{notification.sender.first_name}} {{notification.sender.last_name}}</span>
+              </a>
+            </div>
+            <div class="notification-footer">Notifications</div>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="javascript:;" class="nav-link" appToggleFullscreen>
+            <i class="fi flaticon-fullscreen"></i>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <span class="nav-divider"></span>
+        </li>
+        <li class="nav-item">
+          <a href="javascript:;" class="nav-link" (click)="openSearch(search)">
+            <i class="fi flaticon-search"></i>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <breadcrumb></breadcrumb>
+
+    <div class="main-content">
+      <router-outlet>
+          <simple-notifications ></simple-notifications>
+      </router-outlet>
+      <nav class="navbar custom-navbar navbar-light main-footer small">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:;">
+              <span>Copyright &copy; {{currentYear| date:'yyyy'}}</span> <span class="ff-headers text-uppercase">SEISMIC - V {{appVersion}}</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+</ng-sidebar-container>
+
+<ng-template #search let-c="close" let-d="dismiss">
+  <form class="search__form" action="">
+    <input class="search-input" name="search" type="search" placeholder="Search..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus="true" />
+    <p class="text-muted"><small><strong>Hit enter to search or ESC to close</strong></small></p>
+  </form>
+  <div class="search-suggestions">
+    <h6 class="text-uppercase"><strong>Suggestions?</strong></h6>
+    <p class="text-primary">#medical #analytics #fitness #transport #ui #dashboard #admin #bootstrap #angular #typescript</p>
+  </div>
+  <button type="button" class="search-close" aria-label="Close search form" (click)="d('Cross click')">
+    <i class="fi flaticon-close"></i>
+  </button>
+</ng-template>
+
+<ng-template #changePasswordContent let-c="close" let-d="dismiss">
+  <form [formGroup]="changePasswordForm">
+    <div class="modal-header">
+      <h6 class="modal-title text-uppercase">Change Password</h6>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-12">
+          <fieldset class="form-group" [ngClass]="{'has-danger': changePasswordForm.controls['oldPassword'].hasError('required') && changePasswordForm.controls['oldPassword'].touched}">
+            <label>Current password</label>
+            <input type="password" class="form-control" placeholder="********" [formControl]="changePasswordForm.controls['oldPassword']" [ngClass]="{'form-control-danger': changePasswordForm.controls['oldPassword'].hasError('required') && changePasswordForm.controls['oldPassword'].touched}"/>
+            <div class="form-control-feedback" *ngIf="changePasswordForm.controls['oldPassword'].hasError('required') && changePasswordForm.controls['oldPassword'].touched">Current Password is required.</div>
+          </fieldset>
+        </div>
+        <div class="col-12">
+          <fieldset class="form-group" [ngClass]="{'has-danger': changePasswordForm.controls['newPassword'].hasError('required') && changePasswordForm.controls['newPassword'].touched}">
+            <label>New password</label>
+            <input type="password" class="form-control" placeholder="********" [formControl]="changePasswordForm.controls['newPassword']" [ngClass]="{'form-control-danger': changePasswordForm.controls['newPassword'].hasError('required') && changePasswordForm.controls['newPassword'].touched}"/>
+            <div class="form-control-feedback" *ngIf="changePasswordForm.controls['newPassword'].hasError('required') && changePasswordForm.controls['newPassword'].touched">New Password is required.</div>
+          </fieldset>
+        </div>
+        <div class="col-12">
+          <fieldset class="form-group" [ngClass]="{'has-danger': (changePasswordForm.controls['confirmPassword'].hasError('required') && changePasswordForm.controls['confirmPassword'].touched) || (!changePasswordForm.controls['confirmPassword'].hasError('required') && changePasswordForm.controls['confirmPassword'].touched && !changePasswordForm.valid)}">
+            <label>Confirm password</label>
+            <input type="password" class="form-control" placeholder="********" [formControl]="changePasswordForm.controls['confirmPassword']" [ngClass]="{'form-control-danger': changePasswordForm.controls['confirmPassword'].hasError('required') && changePasswordForm.controls['confirmPassword'].touched}"/>
+            <div class="form-control-feedback" *ngIf="changePasswordForm.controls['confirmPassword'].hasError('required') && changePasswordForm.controls['confirmPassword'].touched">Confirm your password.</div>
+            <div class="form-control-feedback" *ngIf="!changePasswordForm.controls['confirmPassword'].hasError('required') && changePasswordForm.controls['confirmPassword'].touched && !changePasswordForm.valid">Password Does not match</div>
+          </fieldset>
+        </div>
+      </div>
+      <div class="block mb-3"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+      <button class="btn btn-primary" type="submit" (click)="onSaveChanges()" [disabled]="!changePasswordForm.valid">Save</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #profileModal let-c="close" let-d="dismiss">
+  <form [formGroup]="profileForm" (ngSubmit)="onChangeProfile()">
+    <div class="modal-header">
+      <h6 class="modal-title text-uppercase">Profile</h6>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center mb-3">
+        <a href="javascript:;" class="avatar-status avatar-xlg" title="Change Picture" (click)=showPicker()>
+          <div class="mb-1" *ngIf="src!=''">
+            <img class="img-fluid rounded-circle" [src]=src />
+          </div>
+          <div class="mb-1" *ngIf="src==''">
+            <img class="img-fluid rounded-circle" *ngIf="currentUser.profile_pic_url==null" src="assets/images/face1.jpg"/>
+            <img class="img-fluid rounded-circle" *ngIf="currentUser.profile_pic_url!=null" [src]=currentUser.profile_pic_url />
+          </div></a>
+        <h4 class="ma-0"><b>{{currentUser['first_name']}} {{currentUser['last_name']}}</b></h4>
+      </div>
+
+      <div class="dropdown-divider mb-3"></div>
+      <fieldset class="form-group">
+        <label>First name</label>
+        <input type="text" class="form-control" [value]="currentUser['first_name']" placeholder="first name" [formControl]="profileForm.controls['fname']"/>
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Last name</label>
+        <input type="text" class="form-control" [value]="currentUser['last_name']" placeholder="last name" [formControl]="profileForm.controls['lname']"/>
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Email</label>
+        <input readonly="readonly" type="text" [value]="currentUser['email']" class="form-control" placeholder="email" [formControl]="profileForm.controls['email']"/>
+      </fieldset>
+      <fieldset class="form-group">
+        <label>Gender</label>
+        <select class="form-control" [formControl]="profileForm.controls['gender']">
+          <option [disabled]="true" [selected]="currentUser['gender']==null?selected:no">Gender</option>
+          <option value="F" [selected]="currentUser['gender']==female?selected:no">Female</option>
+          <option value="M" [selected]="currentUser['gender']==male?selected:no">Male</option>
+        </select>
+      </fieldset>
+      <div class="block mb-3"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+      <button class="btn btn-primary" title="Save Profile" type="submit" [disabled]="!profileForm.valid">Save</button>
+    </div>
+  </form>
+</ng-template>

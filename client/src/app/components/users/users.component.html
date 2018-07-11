@@ -1,0 +1,192 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h4>Users</h4>
+        <p>Total: {{length}}</p>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button title="Create New User" class="btn btn-primary" (click)="open(content)">New</button>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Remote ID</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let u of users">
+        <td class="text-capitalize">{{u.name}}</td>
+        <td>{{u.email}}</td>
+        <td class="text-capitalize">{{u.remote_id}}</td>
+        <td>
+          <button title="View" class="btn btn-sm btn-info mb-1 mr-2" routerLink="/users/{{u.id}}"><i class="icon icon-basic-eye"></i></button>
+          <button title="Edit" class="btn btn-sm btn-info mb-1 mr-2" (click)="openEditModal(editModalContent,u.id)"><i class="icon icon-software-pencil"></i></button>
+          <!--<button title="Delete" class="btn btn-sm btn-info mb-1"><i class="icon icon-basic-trashcan"></i></button>-->
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer border-top">
+    <div class="row">
+      <div class="col-lg-12">
+        <pagination
+                style="float: right !important"
+                class="pagination-sm pull-right"
+                firstText="««"
+                previousText="«"
+                nextText="»"
+                lastText="»»"
+                [(ngModel)]="page"
+                [totalItems]="length"
+                [itemsPerPage]="itemsPerPage"
+                [maxSize]="maxSize"
+                [boundaryLinks]="true"
+                [rotate]="false"
+                (pageChanged)="onChangeTable($event)"
+                (numPages)="numPages = $event">
+        </pagination>
+      </div>
+    </div>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">New User</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>Name <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}">
+              <input type="text" class="form-control" placeholder="Name" [formControl]="form.controls['name']" [ngClass]="{'form-control-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">Name is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Remote ID</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Remote ID" [formControl]="form.controls['remoteID']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Email <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': (form.controls['email'].hasError('required') && form.controls['email'].touched) || (form.controls['email'].hasError('pattern') && form.controls['email'].touched)}">
+              <input type="email" class="form-control" placeholder="Email" [formControl]="form.controls['email']" [ngClass]="{'form-control-danger': form.controls['email'].hasError('required') && form.controls['email'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched">Email is required.</div>
+              <div class="form-control-feedback" *ngIf="form.controls['email'].hasError('pattern') && form.controls['email'].touched">Email format should be<small><b>someone@abc.com</b></small></div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Gender <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['sex'].hasError('required') && form.controls['sex'].touched}">
+              <select class="form-control" [formControl]="form.controls['sex']" [ngClass]="{'has-danger': form.controls['sex'].hasError('required') && form.controls['sex'].touched}">
+                <option [disabled]="true" [selected]="true">Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+              <div class="form-control-feedback" [ngClass]="{'has-danger': form.controls['sex'].hasError('required') && form.controls['sex'].touched}" *ngIf="form.controls['sex'].hasError('required') && form.controls['sex'].touched">Gender is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Date of Birth <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['date_of_birth'].hasError('required') && form.controls['date_of_birth'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="form.controls['date_of_birth']"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="form.controls['date_of_birth'].hasError('required') && form.controls['date_of_birth'].touched">Date of Birth is required.</div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Create" class="btn btn-primary" type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #editModalContent let-c="close" let-d="dismiss">
+    <form [formGroup]="editForm">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Edit</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>Name</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" [value]="userToEdit.name" placeholder="Name" [formControl]="editForm.controls['name']"/>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Remote ID</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" [value]="userToEdit.remote_id" placeholder="Remote ID" [formControl]="editForm.controls['remoteID']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Email</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': (editForm.controls['email'].hasError('pattern') && editForm.controls['email'].touched)}">
+              <input type="email" class="form-control" placeholder="Email" [value]="userToEdit.email" [formControl]="editForm.controls['email']" [ngClass]="{'form-control-danger':editForm.controls['email'].hasError('pattern') && editForm.controls['email'].touched}"/>
+              <div class="form-control-feedback" *ngIf="editForm.controls['email'].hasError('pattern') && editForm.controls['email'].touched">Email format should be<small><b>someone@abc.com</b></small></div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Gender</label>
+            <fieldset class="form-group" >
+              <select class="form-control" [formControl]="editForm.controls['sex']">
+                <option disabled selected>Gender</option>
+                <option value="Male" [selected]="userDetailsToEdit['sex']==male?selected:no">Male</option>
+                <option value="Female" [selected]="userDetailsToEdit['sex']==female?selected:no">Female</option>
+              </select>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Date of Birth</label>
+            <fieldset class="form-group">
+              <owl-date-time class="owl-widget" [(ngModel)]="userDetailsToEdit.date_of_birth" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="editForm.controls['date_of_birth']"></owl-date-time>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Save" class="btn btn-primary" type="submit" (click)="onSaveChanges(userToEdit.id)">Save</button>
+      </div>
+    </form>
+  </ng-template>
+  <ng-template #deleteModalContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h6 class="modal-title text-uppercase">Delete Confirmation</h6>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-12">
+          <label>Are you sure you want to delete "{{userToEdit.name}}"?</label>
+        </div>
+      </div>
+      <div class="block mb-3"></div>
+    </div>
+    <div class="modal-footer">
+      <button title="Extend Test" class="btn btn-primary" (click)="confirmDelete(userToEdit.id)">Delete</button>
+      <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+    </div>
+  </ng-template>
+</div>

@@ -1,0 +1,191 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h4>Admins</h4>
+        <p>Total: {{length}}</p>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button title="Create New User" class="btn btn-primary" (click)="open(content)">New</button>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+        <tr>
+          <th></th>
+          <th>Role</th>
+          <th>Created At</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of users">
+          <td >
+            <div class="d-flex">
+              <a class="pull-left avatar-sm" href="javascript:;">
+                <img class="img-fluid rounded-circle" *ngIf="u.profile_pic_url==null" src="assets/images/face1.jpg"/>
+                <img class="img-fluid rounded-circle" *ngIf="u.profile_pic_url!=null" src={{u.profile_pic_url}}/>
+              </a>
+              <div class="pl-3">
+                <a class="d-block text-capitalize" href="javascript:;">
+                  {{u.first_name}} {{u.last_name}} <span class="label label-red" *ngIf="u.status==='pending'">Pending</span>
+                </a>
+                <small class="text-muted">
+                  {{u.email}}
+                </small>
+              </div>
+            </div>
+          </td>
+          <td class="text-capitalize"><span class="label label-{{u.role}}">{{u.role}}</span></td>
+          <td>{{u.createdAt | date: 'medium'}}</td>
+          <td>
+            <button title="Edit User" class="btn btn-sm btn-info mb-1 mr-2" (click)="openEditModal(editModalContent,u.id)"><i class="icon icon-software-pencil"></i></button>
+            <button title="Get Invitation Link" class="btn btn-sm btn-info mb-1" (click)="openInvitationModal(invitationModalContent,u.id)" *ngIf="u.status==='pending'" ><i class="icon icon-basic-sheet-txt"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer border-top">
+    <div class="row">
+      <div class="col-lg-12">
+        <pagination
+                style="float: right !important"
+                class="pagination-sm pull-right"
+                firstText="««"
+                previousText="«"
+                nextText="»"
+                lastText="»»"
+                [(ngModel)]="page"
+                [totalItems]="length"
+                [itemsPerPage]="itemsPerPage"
+                [maxSize]="maxSize"
+                [boundaryLinks]="true"
+                [rotate]="false"
+                (pageChanged)="onChangeTable($event)"
+                (numPages)="numPages = $event">
+        </pagination>
+      </div>
+    </div>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">New Admin</h6>
+        <button type="button" class="close" aria-label="Close" (click)="closeX('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>First name</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['fname'].hasError('required') && form.controls['fname'].touched}">
+              <input type="text" class="form-control" placeholder="First name" [formControl]="form.controls['fname']" [ngClass]="{'form-control-danger': form.controls['fname'].hasError('required') && form.controls['fname'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['fname'].hasError('required') && form.controls['fname'].touched">First name is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Last name</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['lname'].hasError('required') && form.controls['lname'].touched}">
+              <input type="text" class="form-control" placeholder="Last name" [formControl]="form.controls['lname']" [ngClass]="{'form-control-danger': form.controls['lname'].hasError('required') && form.controls['lname'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['lname'].hasError('required') && form.controls['lname'].touched">Last name is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Email</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': (form.controls['email'].hasError('required') && form.controls['email'].touched) || (form.controls['email'].hasError('pattern') && form.controls['email'].touched)}">
+              <input type="email" class="form-control" placeholder="Email" [formControl]="form.controls['email']" [ngClass]="{'form-control-danger': form.controls['email'].hasError('required') && form.controls['email'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched">Email is required.</div>
+              <div class="form-control-feedback" *ngIf="form.controls['email'].hasError('pattern') && form.controls['email'].touched">Email format should be<small><b>someone@abc.com</b></small></div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Select Role</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['role'].hasError('required') && form.controls['role'].touched}">
+              <select class="form-control" id="exampleSelect1" [formControl]="form.controls['role']" [ngClass]="{'has-danger': form.controls['role'].hasError('required') && form.controls['role'].touched}">
+                <option [disabled]="true" [selected]="true">Select a role</option>
+                <option value="support">Support</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              <div class="form-control-feedback" [ngClass]="{'has-danger': form.controls['role'].hasError('required') && form.controls['role'].touched}" *ngIf="form.controls['role'].hasError('required') && form.controls['role'].touched">Role is required.</div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="closeButton('Close click')">Close</button>
+        <button title="Create" class="btn btn-primary" type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #editModalContent let-c="close" let-d="dismiss">
+    <form [formGroup]="editForm">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Edit</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>First Name</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="First name" [value]=userToEdit.first_name [formControl]="editForm.controls['fname']"/>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Last name</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Last Name" [value]=userToEdit.last_name [formControl]="editForm.controls['lname']"/>
+            </fieldset>
+          </div>
+          <div class="col-12" *ngIf="loggedInUser.role===admin">
+            <label>Role</label>
+            <fieldset class="form-group">
+              <select class="form-control" [formControl]="editForm.controls['role']">
+                <option [disabled]="true" [selected]="userToEdit.role===no? selected: no">Select a role</option>
+                <option value="support" [selected]="userToEdit.role===support? selected: no">Support</option>
+                <option value="user" [selected]="userToEdit.role===user? selected: no">User</option>
+                <option value="admin" [selected]="userToEdit.role===admin? selected: no">Admin</option>
+              </select>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Save" class="btn btn-primary" type="submit" (click)="onSaveChanges(userToEdit.id)">Save</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #invitationModalContent let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Invitation link</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <textarea rows="4" resizeable="false" type="text" readonly="readonly" class="form-control" [(ngModel)]="invitationLink"></textarea>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Regenerate Link" class="btn btn-primary" (click)="regenerateInvitationLink()">Regenerate link</button>
+        <button title="Copy Link" class="btn btn-primary" [class.btn-success]= "isLinkCopied"
+                ngxClipboard [cbContent]="invitationLink" (cbOnSuccess)="clipBoardOnSuccess()">copy</button>
+      </div>
+  </ng-template>
+</div>

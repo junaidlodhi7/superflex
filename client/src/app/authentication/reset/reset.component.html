@@ -1,0 +1,28 @@
+<div class="d-flex align-items-stretch flex-nowrap min-height-100 h-100">
+  <div class="bg-cover bg-1 hidden-sm-down col-md-12 col-lg-8"></div>
+  <div class="card card-block mb-0 rounded-0 p-5 col-sm-12 col-md-12 col-lg-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div>
+        <img src="../../../assets/images/superflex_logo_395x85.png" class="navbar-brand-logo mb-2" alt="" height="60%" width="90% !important" >
+        <p class="ff-headers text-uppercase">Reset Your Password</p>
+      </div>
+      <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['password'].hasError('required') && form.controls['password'].touched}">
+        <label>
+          Enter your password
+        </label>
+        <input type="password" class="form-control" placeholder="********" [formControl]="form.controls['password']" [ngClass]="{'form-control-danger': form.controls['password'].hasError('required') && form.controls['password'].touched}"/>
+        <div class="form-control-feedback" *ngIf="form.controls['password'].hasError('required') && form.controls['password'].touched">Password is required.</div>
+      </fieldset>
+      <fieldset class="form-group" [ngClass]="{'has-danger': (form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched) || (!form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched && !form.valid)}">
+        <label>
+          Confirm your password
+        </label>
+        <input type="password" class="form-control" placeholder="********" [formControl]="form.controls['confirmPassword']" [ngClass]="{'form-control-danger': form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched}"/>
+        <div class="form-control-feedback" *ngIf="form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched">Confirm your password.</div>
+        <div class="form-control-feedback" *ngIf="!form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched && !form.valid">Password Does not match</div>
+      </fieldset>
+      <div class="block mb-3"></div>
+      <button title="Submit" class="btn btn-primary" type="submit" [disabled]="!form.valid">Submit</button>
+    </form>
+  </div>
+</div>

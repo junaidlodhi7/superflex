@@ -1,0 +1,166 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h4>Annotations</h4>
+        <p>Total: {{length}}</p>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button title="Create New" class="btn btn-primary" (click)="open(content)">New</button>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Name</th>
+        <th>Storage Session</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let u of annotations">
+        <td class="text-capitalize">{{u.name}}</td>
+        <td class="text-capitalize">{{u.storage_session.name}}</td>
+        <td class="text-capitalize">{{u.start}}</td>
+        <td class="text-capitalize">{{u.end}}</td>
+        <td>
+          <button title="View" class="btn btn-sm btn-info mb-1 mr-2"><i class="icon icon-basic-eye"></i></button>
+          <button title="Edit" class="btn btn-sm btn-info mb-1 mr-2"><i class="icon icon-software-pencil"></i></button>
+          <button title="Delete" class="btn btn-sm btn-info mb-1"><i class="icon icon-basic-trashcan"></i></button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer border-top">
+    <div class="row">
+      <div class="col-lg-12">
+        <pagination
+                style="float: right !important"
+                class="pagination-sm pull-right"
+                firstText="««"
+                previousText="«"
+                nextText="»"
+                lastText="»»"
+                [(ngModel)]="page"
+                [totalItems]="length"
+                [itemsPerPage]="itemsPerPage"
+                [maxSize]="maxSize"
+                [boundaryLinks]="true"
+                [rotate]="false"
+                (pageChanged)="onChangeTable($event)"
+                (numPages)="numPages = $event">
+        </pagination>
+      </div>
+    </div>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">New Annotation</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label>Name <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}">
+              <input type="text" class="form-control" placeholder="Name" [formControl]="form.controls['name']" [ngClass]="{'form-control-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">Name is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Storage Session <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['storage_session_id'].hasError('required') && form.controls['storage_session_id'].touched}">
+              <select class="form-control" id="exampleSelect3" [formControl]="form.controls['storage_session_id']" [ngClass]="{'has-danger': form.controls['storage_session_id'].hasError('required') && form.controls['storage_session_id'].touched}">
+                <option disabled selected [value]=noVal>Select Session</option>
+                <option *ngFor="let sv of sSessions" value="{{sv.id}}" >{{sv.name}}</option>
+              </select>
+              <div class="form-control-feedback" *ngIf="form.controls['storage_session_id'].hasError('required') && form.controls['storage_session_id'].touched">Storage Session is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Start Time <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['ts'].hasError('required') && form.controls['ts'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="form.controls['ts']"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="form.controls['ts'].hasError('required') && form.controls['ts'].touched">Start time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>End Time <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['ts_end'].hasError('required') && form.controls['ts_end'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="form.controls['ts_end']"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="form.controls['ts_end'].hasError('required') && form.controls['ts_end'].touched">End time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Notes</label>
+            <fieldset class="form-group">
+              <textarea type="text" class="form-control" placeholder="Notes" [formControl]="form.controls['notes']"></textarea>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Author</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Author" [formControl]="form.controls['author']"/>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Create" class="btn btn-primary" type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #editModalContent let-c="close" let-d="dismiss">
+    <form [formGroup]="editForm">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Edit</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>First Name</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="First name" [value]="userToEdit.first_name" [formControl]="editForm.controls['fname']"/>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Last name</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Last Name" [value]="userToEdit.last_name" [formControl]="editForm.controls['lname']"/>
+            </fieldset>
+          </div>
+          <div class="col-12" *ngIf="loggedInUser.role===userToEdit">
+            <label>Role</label>
+            <fieldset class="form-group">
+              <select class="form-control" [formControl]="editForm.controls['role']">
+                <option [disabled]="true" [selected]="userToEdit.role===no? selected: no">Select a role</option>
+                <option value="support" [selected]="userToEdit.role===support? selected: no">Support</option>
+                <option value="user" [selected]="userToEdit.role===user? selected: no">User</option>
+                <option value="admin" [selected]="userToEdit.role===userToEdit? selected: no">Admin</option>
+              </select>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Save" class="btn btn-primary" type="submit" (click)="onSaveChanges(userToEdit.id)">Save</button>
+      </div>
+    </form>
+  </ng-template>
+</div>

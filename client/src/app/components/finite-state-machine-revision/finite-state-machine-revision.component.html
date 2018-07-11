@@ -1,0 +1,52 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <button title="Create New" class="btn btn-primary" routerLink='/finitestatemachines/{{finiteStateMachineId}}/finitestatemachinerevisions/new'>New</button>
+    </div>
+  </div>
+  <div class="card-block">
+    <p>Total Revisions: {{revisions.length}}</p>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Name</th>
+        <th>Revision Number</th>
+        <th>Created At</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let revision of revisions">
+        <td>{{finiteStateMachineName}}</td>
+        <th scope="row" class="myLink"><a routerLink='/finitestatemachines/{{finiteStateMachineId}}/finitestatemachinerevisions/{{revision.id}}'>{{revision.revision_number}}</a></th>
+        <td>{{revision.created_timestamp | date:'medium'}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <form >
+    <div class="modal-header">
+      <h6 class="modal-title text-uppercase">New Revision</h6>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="row">
+        <div class="col-12">
+          <textarea id="code-editor" ></textarea>
+        </div>
+      </div>
+      <div class="block mb-3"></div>
+    </div>
+    <div class="modal-footer">
+      <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+      <button title="Create" class="btn btn-primary" type="submit" (click)="  onSubmit();">Create</button>
+    </div>
+  </form>
+</ng-template>

@@ -1,0 +1,188 @@
+<div class="card embed-responsive">
+  <div class="card-header">
+    <div class="card-header-text col-10">
+      <div class="card-title">
+        <h4>{{testData['label']}}</h4>
+      </div>
+    </div>
+    <div class="col-2">
+      <button title="Download Data Intervals" class="btn btn-info" (click)="openDownloadModal(downloadModalContent,testData['id'])">Download</button>
+    </div>
+  </div>
+  <div class="card-block">
+    <div class="row mb-5">
+      <div *ngIf="testData['test_date']" class="col-3 wordWrap"><h5>Test Date</h5><h3>{{testData['test_date'] | date:'mediumDate'}}</h3></div>
+      <div *ngIf="users.length" class="col-3 wordWrap text-capitalize"><h5>Users</h5><h3>{{users[0]['first_name']}} {{users[0]['last_name']}}</h3></div>
+      <div *ngIf="tSuitConfig['label']" class="col-3 wordWrap text-capitalize"><h5>Suit</h5><h3>{{tSuitConfig['label']}}</h3></div>
+      <div *ngIf="testDuration" class="col-3 wordWrap"><h5>Test Duration</h5><h3>{{testDuration}}</h3></div>
+    </div>
+    <small *ngIf="testData['field_notes']" class="p-t-2 text-capitalize">
+      <strong>Notes: </strong>
+      {{testData['field_notes']}}
+    </small><br/>
+    <small class="p-t-2 text-capitalize">
+      {{tType['description']}}
+    </small>
+  </div>
+</div>
+
+<div class="card embed-responsive">
+  <div class="card-header">
+    <div class="card-header-text col-8">
+    </div>
+    <div class="col-4">
+      <div *ngIf="showGraph">
+        <button class="btn btn-sm btn-info mr-1" title="Zoom in" (click)="graphZoomIn()"><i class="icon icon-arrows-circle-plus"></i></button>
+        <button class="btn btn-sm btn-info mr-1" title="Zoom Out" (click)="graphZoomOut()"><i class="icon icon-arrows-circle-minus"></i></button>
+        <button class="btn btn-sm btn-info mr-1" title="Zoom Out All" (click)="graphZoomOutAll()">Zoom Out All</button>
+      </div>
+    </div>
+  </div>
+  <div class="card-block">
+    <div class="col-sm-12 col-md-12">
+      <div id="chartDiv" class="card card-block"></div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-10">
+      <div class="card-title">
+        <h3>Suit Annotations</h3>
+        <p>Total: {{suitAnnotations['length']}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Label</th>
+        <th>Start Time</th>
+        <th>Stop Time</th>
+        <th>Notes</th>
+        <th>Tags</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let suitAnnotation of suitAnnotations">
+        <th scope="row" class="text-capitalize">{{suitAnnotation.label}}</th>
+        <td>{{suitAnnotation.start_timestamp | date:'medium'}}</td>
+        <td>{{suitAnnotation.stop_timestamp | date:'medium'}}</td>
+        <td class="text-capitalize">{{suitAnnotation.notes}}</td>
+        <td>
+            <span *ngFor="let tag of suitAnnotation.tags">
+              <span *ngIf="tag!=''"  class="label label-primary">{{tag}}&nbsp;&nbsp;&nbsp;</span>
+            </span>
+        </td>
+        <td>
+          <button title="Edit Suit Annotation" class="btn btn-sm btn-info mb-1" (click)="openEditModal(editModalContent,suitAnnotation.id)"><i class="icon icon-software-pencil"></i></button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #editModalContent let-c="close" let-d="dismiss">
+    <form [formGroup]="form">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Edit</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label>Label</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="label" [value]=suitAnnotation.label [formControl]="form.controls['label']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Notes</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Notes" [value]=suitAnnotation.notes [formControl]="form.controls['note']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Start time</label>
+            <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=suitAnnotation.start showSecondsTimer="true" [(ngModel)]=suitAnnotation.start_time [formControl]="form.controls['startTime']"></owl-date-time>
+          </div>
+          <div class="col-12">
+            <label>Stop time</label>
+            <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=suitAnnotation.stop showSecondsTimer="true" [(ngModel)]=suitAnnotation.stop_time [formControl]="form.controls['stopTime']" [min]=suitAnnotation.start_time></owl-date-time>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Save" class="btn btn-primary" type="submit" (click)="onSaveChanges(suitAnnotation.id)">Save</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #downloadModalContent let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h6 class="modal-title text-uppercase">Data Intervals</h6>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-block">
+        <div *ngIf="dataIntervals.length; else blankBlock" class="table-responsive mb-5">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="thead-inverse">
+            <tr>
+              <th>Start</th>
+              <th>End</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dataInterval of dataIntervals">
+              <td>{{dataInterval.start_timestamp | date:'short'}}</td>
+              <td>{{dataInterval.stop_timestamp | date:'short'}}</td>
+              <td>
+                <p *ngIf="dataInterval.data_url; then thenBlock else elseBlock" ></p>
+                <ng-template #thenBlock><a href="{{dataInterval.data_url}}" download="true">Download</a></ng-template>
+                <ng-template #elseBlock>File doesn't exist.</ng-template>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #blankBlock>
+          <ngb-alert [dismissible]="false">
+            No data intervals found
+          </ngb-alert>
+        </ng-template>
+      </div>
+    </div>
+    <div class="modal-footer" *ngIf="dataIntervals.length">
+      <div class="row">
+        <div class="col-lg-12">
+          <pagination
+                  style="float: right !important"
+                  class="pagination-sm pull-right"
+                  firstText="««"
+                  previousText="«"
+                  nextText="»"
+                  lastText="»»"
+                  [(ngModel)]="pageModal"
+                  [totalItems]="lengthModal"
+                  [itemsPerPage]="itemsPerPageModal"
+                  [maxSize]="maxSizeModal"
+                  [boundaryLinks]="true"
+                  [rotate]="false"
+                  (pageChanged)="onChangeTableModal($event)"
+                  (numPages)="numPagesModal = $event">
+          </pagination>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>

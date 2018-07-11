@@ -1,0 +1,171 @@
+<div class="card embed-responsive">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h4>{{testData['label']}}</h4>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button *ngIf="testStatus=='Running'" class="btn btn-info" title="Stop Test" (click)="stopTest()">Stop</button>
+    </div>
+  </div>
+  <div class="card-block mb-3">
+    <div class="row mb-5">
+      <div class="col-3 wordWrap"><h5>Started At</h5><h3>{{testData['created_timestamp'] | date:'mediumDate'}}</h3></div>
+      <div class="col-3 wordWrap text-capitalize"><h5>Test Status</h5><h3>{{testStatus}}</h3></div>
+      <div class="col-3 wordWrap text-capitalize"><h5>{{timeType}}</h5><h3>{{elapsedTime}}</h3></div>
+      <div class="col-3 wordWrap"><h5>Moderator</h5><h3>e</h3></div>
+    </div>
+    <small *ngIf="testData['field_notes']" class="p-t-2 text-capitalize">
+      <strong>Notes: </strong>
+      {{testData['field_notes']}}
+    </small><br/>
+    <small class="p-t-2 text-capitalize">
+      {{testData['description']}}
+    </small>
+  </div>
+  <div class="dropdown-divider mb-3"></div>
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h3>Suit Annotations</h3>
+        <p>Total: {{suitAnnotations['length']}}</p>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button class="btn btn-info" title="Start new annotation" (click)="openNewAnnotationModal(content)">New</button>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Label</th>
+        <th>Start Time</th>
+        <th>Stop Time</th>
+        <th>Notes</th>
+        <th>Tags</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let suitAnnotation of suitAnnotations">
+        <th scope="row" class="text-capitalize">{{suitAnnotation.label}}</th>
+        <td>{{suitAnnotation.start_timestamp | date:'medium'}}</td>
+        <td>{{suitAnnotation.stop_timestamp | date:'medium'}}</td>
+        <td class="text-capitalize">{{suitAnnotation.notes}}</td>
+        <td>
+            <span *ngFor="let tag of suitAnnotation.tags">
+              <span *ngIf="tag!=''"  class="label label-primary">{{tag}}&nbsp;&nbsp;&nbsp;</span>
+            </span>
+        </td>
+        <td>
+          <button title="Edit Suit Annotation" class="btn btn-sm btn-info mb-1" (click)="openEditModal(editModalContent,suitAnnotation.id)"><i class="icon icon-software-pencil"></i></button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="newAnnotationForm">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">New Annotation</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label>Label</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': newAnnotationForm.controls['label'].hasError('required') && newAnnotationForm.controls['label'].touched}">
+              <input type="text" class="form-control" placeholder="Label" [formControl]="newAnnotationForm.controls['label']" [ngClass]="{'form-control-danger': newAnnotationForm.controls['label'].hasError('required') && newAnnotationForm.controls['label'].touched}"/>
+              <div class="form-control-feedback" *ngIf="newAnnotationForm.controls['label'].hasError('required') && newAnnotationForm.controls['label'].touched">Label is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Tags</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': newAnnotationForm.controls['tags'].hasError('required') && newAnnotationForm.controls['tags'].touched}">
+              <input type="text" class="form-control" placeholder="Tags" [formControl]="newAnnotationForm.controls['tags']" [ngClass]="{'form-control-danger': newAnnotationForm.controls['tags'].hasError('required') && newAnnotationForm.controls['tags'].touched}"/>
+              <div class="form-control-feedback"><small class="text-muted">Give comma separated tags.</small></div>
+              <div class="form-control-feedback" *ngIf="newAnnotationForm.controls['tags'].hasError('required') && newAnnotationForm.controls['tags'].touched">Tags are required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Field Notes</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': newAnnotationForm.controls['fieldNotes'].hasError('required') && newAnnotationForm.controls['fieldNotes'].touched}">
+              <textarea type="text" class="form-control" placeholder="Field Notes" [formControl]="newAnnotationForm.controls['fieldNotes']" [ngClass]="{'form-control-danger': newAnnotationForm.controls['fieldNotes'].hasError('required') && newAnnotationForm.controls['fieldNotes'].touched}"></textarea>
+              <div class="form-control-feedback" *ngIf="newAnnotationForm.controls['fieldNotes'].hasError('required') && newAnnotationForm.controls['fieldNotes'].touched">Field Notes are required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Start time</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': newAnnotationForm.controls['startTime'].hasError('required') && newAnnotationForm.controls['startTime'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [(ngModel)]="annotationStart" [formControl]="newAnnotationForm.controls['startTime']" [min]="testStart"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="newAnnotationForm.controls['startTime'].hasError('required') && newAnnotationForm.controls['startTime'].touched">Start time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Stop time</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': newAnnotationForm.controls['endTime'].hasError('required') && newAnnotationForm.controls['endTime'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [(ngModel)]="annotationEnd" [formControl]="newAnnotationForm.controls['endTime']" [min]="annotationStart"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="newAnnotationForm.controls['endTime'].hasError('required') && newAnnotationForm.controls['endTime'].touched">Stop time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Creator</label>
+            <fieldset class="form-group">
+              <input type="text" disabled="disabled" class="form-control" [value]="user['first_name']+' '+user['last_name']" placeholder="Creator"/>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Create Annotation" class="btn btn-primary" type="submit" [disabled]="!newAnnotationForm.valid" (click)="onSubmit()">Create</button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template #editModalContent let-c="close" let-d="dismiss">
+    <form [formGroup]="form">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Edit</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label>Label</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="label" [value]=suitAnnotation.label [formControl]="form.controls['label']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Notes</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Notes" [value]=suitAnnotation.notes [formControl]="form.controls['note']"/>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Start time</label>
+            <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=suitAnnotation.start showSecondsTimer="true" [(ngModel)]=suitAnnotation.start_time [formControl]="form.controls['startTime']" [min]="testStart"></owl-date-time>
+          </div>
+          <div class="col-12">
+            <label>Stop time</label>
+            <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=suitAnnotation.stop showSecondsTimer="true" [(ngModel)]=suitAnnotation.stop_time [formControl]="form.controls['stopTime']" [min]=suitAnnotation.start_time></owl-date-time>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Save" class="btn btn-primary" type="submit" (click)="onSaveChanges(suitAnnotation.id)">Save</button>
+      </div>
+    </form>
+  </ng-template>
+
+</div>

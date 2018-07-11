@@ -1,0 +1,28 @@
+<div class="row">
+  <div class="card col-6">
+    <div class="card-header">
+      Api Command Sequence Revision
+    </div>
+    <div class="card-block row">
+      <p class="col-3">Version</p><strong class="col-9 text-capitalize wordWrap"><span *ngIf="apiCommandSequenceRevision.version">{{apiCommandSequenceRevision.version}}</span></strong><br/>
+      <p class="col-3">Author</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequenceRevision.author">{{apiCommandSequenceRevision.author}}</span></strong><br/>
+      <p class="col-3">Period</p><strong class="col-9 text-capitalize wordWrap"><span *ngIf="apiCommandSequenceRevision.period">{{apiCommandSequenceRevision.period}}</span></strong><br/>
+      <p class="col-3">Period Units</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequenceRevision.period_units">{{apiCommandSequenceRevision.period_units}}</span></strong><br/>
+      <p class="col-3">Description</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequenceRevision.description">{{apiCommandSequenceRevision.description}}</span></strong><br/>
+      <p class="col-3">Notes (YAML)</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequenceRevision.notes">{{apiCommandSequenceRevision.notes}}</span></strong><br/>
+    </div>
+  </div>
+
+
+  <div class="card col-6">
+    <div class="card-header">
+      Api Command Sequence
+    </div>
+    <div class="card-block row">
+      <p class="col-3">Name</p><strong class="col-9 text-capitalize wordWrap"><span *ngIf="apiCommandSequence.name">{{apiCommandSequence.name}}</span></strong><br/>
+      <p class="col-3">Nice Name</p><strong class="col-9 text-capitalize wordWrap"><span *ngIf="apiCommandSequence.nice_name">{{apiCommandSequence.nice_name}}</span></strong><br/>
+      <p class="col-3">Notes</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequence.notes">{{apiCommandSequence.notes}}</span></strong><br/>
+      <p class="col-3">Description</p><strong class="col-9 wordWrap"><span *ngIf="apiCommandSequence.description">{{apiCommandSequence.description}}</span></strong><br/>
+    </div>
+  </div>
+</div>

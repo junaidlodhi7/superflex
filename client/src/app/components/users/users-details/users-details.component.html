@@ -1,0 +1,145 @@
+<div class="card">
+  <div class="card-block mb-2">
+    <div class="row">
+      <p class="col-2">Name</p><strong class="col-10 text-capitalize wordWrap"><span *ngIf="user.name">{{user.name}}</span></strong><br/>
+      <p class="col-2">Email</p><strong class="col-10 wordWrap"><span *ngIf="user.email">{{user.email}}</span></strong><br/>
+      <p class="col-2">Date of Birth</p><strong class="col-10 wordWrap"><span *ngIf="user.date_of_birth">{{userDetail.date_of_birth | date:'mediumDate'}}</span></strong><br/>
+      <p class="col-2">Gender</p><strong class="col-10 wordWrap"><span *ngIf="user.sex">{{userDetail.sex}}</span></strong><br/>
+      <p class="col-2">Remote Id</p><strong class="col-10 wordWrap"><span *ngIf="user.remote_id">{{user.remote_id}}</span></strong><br/>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-md-10">
+      <div class="card-title">
+        <h4>Storage Sessions</h4>
+      </div>
+    </div>
+    <div class=" w-100 col-md-2 mt-3">
+      <button title="Create New" class="btn btn-primary" (click)="open(content)">New</button>
+    </div>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Name</th>
+        <th>Product</th>
+        <th>Hardware Config</th>
+        <th>Start</th>
+        <th>End</th>
+        <!--<th></th>-->
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let u of storageSessions">
+        <td class="text-capitalize">{{u.name}}</td>
+        <td class="text-capitalize">{{u.product_id}}</td>
+        <td class="text-capitalize">{{u.hardware_config}}</td>
+        <td class="text-capitalize">{{u.start}}</td>
+        <td class="text-capitalize">{{u.end}}</td>
+        <!--<td>-->
+          <!--<button title="View" class="btn btn-sm btn-info mb-1 mr-2"><i class="icon icon-basic-eye"></i></button>-->
+          <!--<button title="Edit" class="btn btn-sm btn-info mb-1 mr-2" (click)="openEditModal(editModalContent,u.id)"><i class="icon icon-software-pencil"></i></button>-->
+          <!--<button title="Delete" class="btn btn-sm btn-info mb-1"><i class="icon icon-basic-trashcan"></i></button>-->
+        <!--</td>-->
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">New Storage Session</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-6">
+            <label>Product Config Revision <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['product_config_revision_id'].hasError('required') && form.controls['product_config_revision_id'].touched}">
+              <select class="form-control" id="exampleSelect1" [formControl]="form.controls['product_config_revision_id']" [ngClass]="{'has-danger': form.controls['product_config_revision_id'].hasError('required') && form.controls['product_config_revision_id'].touched}">
+                <option disabled selected [value]=noVal>Select Product Config Revision</option>
+                <option *ngFor="let fv of pCRevision" value="{{fv.id}}" >{{fv.version}}</option>
+              </select>
+              <div class="form-control-feedback" *ngIf="form.controls['product_config_revision_id'].hasError('required') && form.controls['product_config_revision_id'].touched">Product Config Revision is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Product <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['product_id'].hasError('required') && form.controls['product_id'].touched}">
+              <select class="form-control" id="exampleSelect3" [formControl]="form.controls['product_id']" [ngClass]="{'has-danger': form.controls['product_id'].hasError('required') && form.controls['product_id'].touched}">
+                <option disabled selected [value]=noVal>Select Product</option>
+                <option *ngFor="let pv of products" value="{{pv.id}}" >{{pv.serial_number}}</option>
+              </select>
+              <div class="form-control-feedback" *ngIf="form.controls['product_id'].hasError('required') && form.controls['product_id'].touched">Product is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Name <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}">
+              <input type="text" class="form-control" placeholder="Name" [formControl]="form.controls['name']" [ngClass]="{'form-control-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">Name is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Location <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['location'].hasError('required') && form.controls['location'].touched}">
+              <input type="text" class="form-control" placeholder="Location" [formControl]="form.controls['location']" [ngClass]="{'form-control-danger': form.controls['location'].hasError('required') && form.controls['location'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['location'].hasError('required') && form.controls['location'].touched">Location is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Connection Type <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['connection_type'].hasError('required') && form.controls['connection_type'].touched}">
+              <input type="text" class="form-control" placeholder="Connection Type" [formControl]="form.controls['connection_type']" [ngClass]="{'form-control-danger': form.controls['connection_type'].hasError('required') && form.controls['connection_type'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['connection_type'].hasError('required') && form.controls['connection_type'].touched">Connection Type is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Hardware Config</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Hardware Config" [formControl]="form.controls['hardware_config']"/>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Remote ID</label>
+            <fieldset class="form-group">
+              <input type="text" class="form-control" placeholder="Remote ID" [formControl]="form.controls['remote_id']"/>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>Start Time <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['ts_start'].hasError('required') && form.controls['ts_start'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="form.controls['ts_start']"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="form.controls['ts_start'].hasError('required') && form.controls['ts_start'].touched">Start time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-6">
+            <label>End Time <small class="text-red">*</small></label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['ts_end'].hasError('required') && form.controls['ts_end'].touched}">
+              <owl-date-time class="owl-widget" inputStyleClass="form-control" showButtons="true" hourFormat="12" [dateFormat]=format dataType="date" showHeader="true" [placeHolder]=format showSecondsTimer="true" [formControl]="form.controls['ts_end']"></owl-date-time>
+              <div class="form-control-feedback" *ngIf="form.controls['ts_end'].hasError('required') && form.controls['ts_end'].touched">End time is required.</div>
+            </fieldset>
+          </div>
+          <div class="col-12">
+            <label>Description</label>
+            <fieldset class="form-group">
+              <textarea type="text" rows="4" class="form-control" placeholder="Description" [formControl]="form.controls['description']"></textarea>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Create" class="btn btn-primary" type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </ng-template>
+</div>

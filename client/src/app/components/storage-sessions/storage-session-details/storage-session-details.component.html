@@ -1,0 +1,140 @@
+<div class="card">
+  <div class="card-header">
+    Storage Session
+  </div>
+  <div class="card-block mb-2">
+    <div class="row">
+      <p class="col-2">Name</p><strong class="col-10 text-capitalize wordWrap"><span *ngIf="storageSession.name">{{storageSession.name}}</span></strong><br/>
+      <!--<p *ngIf="storageSession.user_id" class="col-2">User ID</p><strong *ngIf="storageSession.user_id" class="col-4 wordWrap">{{storageSession.user_id}}</strong><br/>-->
+      <!--<p *ngIf="storageSession.product_id" class="col-2">Product ID</p><strong *ngIf="storageSession.product_id" class="col-4 wordWrap">{{storageSession.product_id}}</strong><br/>-->
+      <!--<p *ngIf="storageSession.product_config_revision_id" class="col-2">Product Config Revision ID</p><strong *ngIf="storageSession.product_config_revision_id" class="col-4 wordWrap">{{storageSession.product_config_revision_id}}</strong><br/>-->
+      <p class="col-2">Start</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.start">{{storageSession.start}}</span></strong><br/>
+      <p class="col-2">End</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.end">{{storageSession.end}}</span></strong><br/>
+      <p class="col-2">Remote Id</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.remote_id">{{storageSession.remote_id}}</span></strong><br/>
+      <p class="col-2">Location</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.location">{{storageSession.location}}</span></strong><br/>
+      <p class="col-2">Hardware Config</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.hardware_config">{{storageSession.hardware_config}}</span></strong><br/>
+      <p class="col-2">Connection Type</p><strong class="col-4 wordWrap"><span *ngIf="storageSession.connection_type">{{storageSession.connection_type}}</span></strong><br/>
+      <p class="col-2">Description</p><strong class="col-10 wordWrap"><span *ngIf="storageSession.description">{{storageSession.description}}</span></strong><br/>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card col-6">
+    <div class="card-header">
+      User
+    </div>
+    <div class="card-block row">
+      <p class="col-2">Name</p><strong class="col-10 text-capitalize wordWrap"><span *ngIf="user.name">{{user.name}}</span></strong><br/>
+      <p class="col-2">Email</p><strong class="col-10 wordWrap"><span *ngIf="user.email">{{user.email}}</span></strong><br/>
+      <p class="col-2">Remote Id</p><strong class="col-10 wordWrap"><span *ngIf="user.remote_id">{{user.remote_id}}</span></strong><br/>
+    </div>
+  </div>
+
+
+  <div class="card col-6">
+    <div class="card-header">
+      Product
+    </div>
+    <div class="card-block row">
+      <p class="col-3">Serial Number</p><strong class="col-9 text-capitalize wordWrap"><span *ngIf="product.serial_number">{{product.serial_number}}</span></strong><br/>
+      <p class="col-3">Build Date</p><strong  class="col-9 wordWrap"><span *ngIf="product.build_date">{{product.build_date | date:'medium'}}</span></strong><br/>
+    </div>
+  </div>
+
+
+  <div class="card col-12">
+    <div class="card-header">
+      Product Config Revision
+    </div>
+    <div class="card-block row">
+      <p class="col-2">Author</p><strong class="col-10 text-capitalize wordWrap"><span *ngIf="product_config_revision.author">{{product_config_revision.author}}</span></strong><br/>
+      <p class="col-2">Version</p><strong class="col-10 text-capitalize wordWrap"><span *ngIf="product_config_revision.version">{{product_config_revision.version}}</span></strong><br/>
+      <p class="col-2">Settings</p><strong class="col-10 wordWrap"><span *ngIf="product_config_revision.settings">{{product_config_revision.settings}}</span></strong><br/>
+      <p class="col-2">Description</p><strong class="col-10 wordWrap"><span *ngIf="product_config_revision.description">{{product_config_revision.description}}</span></strong><br/>
+    </div>
+  </div>
+</div>
+<div class="card card-block">
+  <div class="row">
+    <div class="col-12 mb-2">
+      <form [formGroup]="form">
+        <div class="row">
+          <div class="col-4">
+            <fieldset class="form-group">
+              <ng-select
+                      [multiple]="multiple"
+                      [placeholder]="boardPlaceholderText"
+                      [allowClear]="canClearSelect"
+                      [options]="boardOptions"
+                      [(ngModel)]="boardSelectValue"
+                      (selected)="onBoardSelect($event)"
+                      (deselected)="onBoardDeselect($event)"
+                      formControlName="board">
+              </ng-select>
+            </fieldset>
+          </div>
+          <div class="col-3">
+            <fieldset class="form-group">
+              <ng-select
+                      [multiple]="multiple"
+                      [placeholder]="groupPlaceholderText"
+                      [allowClear]="canClearSelect"
+                      [options]="groupOptions"
+                      [(ngModel)]="groupSelectValue"
+                      (selected)="onGroupSelect($event)"
+                      (deselected)="onGroupDeselect($event)"
+                      formControlName="group">
+              </ng-select>
+            </fieldset>
+          </div>
+          <div class="col-4">
+            <fieldset class="form-group" >
+              <ng-select
+                      [multiple]="multiple"
+                      [placeholder]="streamTypePlaceholderText"
+                      [allowClear]="canClearSelect"
+                      [options]="streamTypeOptions"
+                      [(ngModel)]="streamTypeSelectValue"
+                      (selected)="onStreamSelect($event)"
+                      (deselected)="onStreamDeselect($event)"
+                      formControlName="stream">
+              </ng-select>
+            </fieldset>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-primary" title="Add" (click)="addFilter()" [disabled]="!form.valid">Add</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="table-responsive" *ngIf="filters.length > 0">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="thead-inverse">
+        <tr>
+          <th></th>
+          <th>Board</th>
+          <th>Group</th>
+          <th>Stream</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let f of filters">
+          <td><div class="color-cricle" [style.background-color]="f.color"></div></td>
+          <td>{{f.category}}</td>
+          <td>{{f.group}}</td>
+          <td>{{f.stream.key}}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" title="Remove" (click)="RemoveFilter(f.index)"><i class="icon icon-arrows-square-remove"></i></button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-12 dropdown-divider mb-5"></div>
+    <div class="col-12">
+      <div id="chartDiv"></div>
+    </div>
+  </div>
+</div>

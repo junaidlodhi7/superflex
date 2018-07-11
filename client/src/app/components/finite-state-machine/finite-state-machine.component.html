@@ -1,0 +1,78 @@
+<div class="card">
+  <div class="card-header">
+    <div class="card-header-text w-100 col-10">
+      <button title="Create New" class="btn btn-primary" (click)="open(content)">New</button>
+    </div>
+  </div>
+  <div class="card-block">
+    <p>
+      Total: {{length}}
+    </p>
+  </div>
+  <div class="table-responsive mb-5">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="thead-inverse">
+      <tr>
+        <th>Name</th>
+        <th>Total Revisions</th>
+        <th>Created At</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let da of data">
+        <th scope="row"><a [routerLink]="[da.id]">{{da.name}}</a></th>
+        <td>{{da.finite_state_machine_revisions.length}}</td>
+        <td>{{da.created_timestamp | date:'medium'}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card-footer border-top">
+    <div class="row">
+      <div class="col-lg-12">
+        <pagination
+                style="float: right !important"
+                class="pagination-sm pull-right"
+                firstText="««"
+                previousText="«"
+                nextText="»"
+                lastText="»»"
+                [(ngModel)]="page"
+                [totalItems]="length"
+                [itemsPerPage]="itemsPerPage"
+                [maxSize]="maxSize"
+                [boundaryLinks]="true"
+                [rotate]="false"
+                (pageChanged)="onChangeTable($event)"
+                (numPages)="numPages = $event">
+        </pagination>
+      </div>
+    </div>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <div class="modal-header">
+        <h6 class="modal-title text-uppercase">Finite State Machine</h6>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <label>Name</label>
+            <fieldset class="form-group" [ngClass]="{'has-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}">
+              <input type="text" class="form-control" placeholder="Name" [formControl]="form.controls['name']" [ngClass]="{'form-control-danger': form.controls['name'].hasError('required') && form.controls['name'].touched}"/>
+              <div class="form-control-feedback" *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">Name is required.</div>
+            </fieldset>
+          </div>
+        </div>
+        <div class="block mb-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button title="Close" type="button" class="btn btn-secondary" (click)="c('Close click')">Close</button>
+        <button title="Create" class="btn btn-primary" type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </ng-template>
+</div>

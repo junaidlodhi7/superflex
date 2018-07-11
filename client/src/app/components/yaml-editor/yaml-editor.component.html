@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-block">
+    <ngb-alert [type]="alert.type" [dismissible]="false" *ngIf="!alert['closed']" (close)="alert['closed']">{{ alert['message'] }}</ngb-alert>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-12" *ngIf="isFunctionalMovement()">
+          <div class="row">
+            <label class="col-2 wordWrap">Description</label>
+            <fieldset class="col-10 form-group">
+              <textarea type="text" rows="4" class="form-control" placeholder="Description" [formControl]="form.controls['description']"></textarea>
+            </fieldset>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="row">
+            <label class="col-2 wordWrap">Functional movement (Yaml)</label>
+            <fieldset class="col-10 form-group">
+              <textarea id="code-editor" class="border" ></textarea>
+            </fieldset>
+          </div>
+        </div>
+        <div class="col-12 mb-4 border-top"></div>
+        <div class="col-12">
+          <button title="Create" class="btn btn-primary pull-right" style="float: right !important;" type="submit" [disabled]="!form.valid">Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
